@@ -1,0 +1,70 @@
+- name: set hostname of the server
+  template:
+    src: hostname.j2
+    dest: /etc/hostname
+  tags:
+    - package
+
+
+- name: set DNS
+  template: 
+    src: dns_resolver.j2
+    dest: /etc/resolv.conf
+  tags:
+    - package1
+
+
+- name: Set IP on the interface
+  template:
+    src: ifcfg-eth0:2 
+    dest: /etc/sysconfig/network-scripts/
+
+- name: start the inerface
+  shell: "{{ item }}"
+  with_items:
+  -  ifup ifcfg-eth0:2
+  - service network restart
+  tags: 
+    - ifup
+
+- name: Diable SELINUX service
+  shell: "{{item}}" 
+  with_items:
+  - sed -i 's/enforcing/disabled/g' /etc/selinux/config
+  - sed -i 's/permissive/disabled/g' /etc/selinux/config
+  tags:
+    - selinux
+
+- name: Changing the default port 
+  shell: "{{ item }}"
+  with_items:
+  - sed -i '/^#Port/c\Port 10786' /etc/ssh/sshd_config
+  - service sshd restart
+
+- name: Rebbot the server after the desired changes
+  shell: reboot
+  tags:
+    - rebooting
+
+- name: Iptables configuration
+  shell: "{{ item }}"
+  with_items: 
+  - systemctl stop firewalld
+  - systemctl disable firewalld
+  - service iptables stop
+  - iptables -P INPUT ACCEPT 
+  - iptables -P FORWARD ACCEPT 
+  - iptables -P OUTPUT ACCEPT
+  - iptables –F
+  - iptables -t nat -F
+  - iptables -t mangle -F
+  - iptables -A INPUT -i lo -j ACCEPT
+  - iptables -A INPUT -p icmp -j ACCEPT
+  - iptables -A INPUT -m iprange --src-range 110.93.203.88-110.93.203.102 -p tcp -m tcp --dport 10786 -j ACCEPT
+  - iptables -A INPUT -s 192.253.242.76/32,23.19.133.222/32,78.129.249.222/32,95.154.253.253/32,109.123.90.90/32,110.93.216.230/32,206.123.129.2/32,172.94.17.22/32 -p tcp -m tcp --dport 10786 -j ACCEPT
+  - iptables -A INPUT -p tcp -m tcp --dport 5200 -j ACCEPT
+  - iptables -A INPUT -p tcp -m tcp --dport 10799 -j ACCEPT
+  - iptables -A INPUT -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
+  - iptables -P INPUT DROP
+  tags:
+    - iptables

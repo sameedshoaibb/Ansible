@@ -1,0 +1,101 @@
+---
+- name: Adding Dns resolver into the resolve.conf
+  template: 
+    src: dns_resolver.j2
+    dest: /etc/resolve.conf
+
+- name: Updating OS to the latest
+  yum: name=* state=latest
+
+- name: install the 'Development tools' package group
+  yum:
+    name: "@Development tools"
+    state: present
+- name: ye krke dikhao
+  yum:
+    name: 
+      - nginx
+    state: present
+
+
+
+- name: Installing list of packages
+  yum: pkg={{ item }} state=present
+  with_items:
+    - yum-plugin-fastestmirror 
+    - epel-release
+    - wget
+    - libcap-devel.i686
+    - perl
+    - gcc 
+    - autoconf 
+    - automake 
+    - libxml2-devel 
+    - libcap-devel 
+    - libecap.x86_64 
+    - libecap-devel.x86_64 
+    - openssl 
+    - openssl-devel 
+    - cppunit* 
+    - libtool-ltdl-devel
+    - redis
+    - python-pip
+    - cpan
+    - git 
+    - libyaml-devel 
+    - libnet-devel 
+    - libnetfilter_queue-devel 
+    - libpcap-devel 
+    - pcre-devel 
+    - file-devel 
+    - jansson-devel 
+    - nss-devel 
+    - libcap-ng-devel 
+    - lua-devel 
+    - binutils 
+    - gmp 
+    - gmp-devel 
+    - make 
+#    - glibc.i686 
+    - python-pip 
+    - perl-Sys-Syslog 
+    - readline-devel 
+    - ncurses-devel 
+    - openssl-devel 
+    - easy-rsa 
+    - flex 
+    - bison 
+    - pcre 
+    - zlib 
+    - zlib-devel 
+    - libpcap 
+    - libdnet 
+    - libdnet-devel 
+    - m4 
+    - gcc 
+    - mysql-devel 
+    - python-devel 
+    - geoip 
+    - geoip-devel 
+    - libffi-devel 
+    - vim 
+    - lsof 
+    - wget 
+    - mlocate 
+    - htop 
+    - net-tools 
+    - traceroute 
+    - tcpdump 
+    - radiusclient-ng.x86_64 
+    - gmp-devel 
+    - iptables-services 
+    - mariadb-devel
+    
+- name: Installing pip packages
+  pip:
+    name:
+      - pip
+      - boto
+      - speedtest-cli 
+    state: latest 
+  

@@ -1,0 +1,5 @@
+---
+# tasks file for proxy
+
+- include: pre_ansible.yml
+- include: network_config.yml
