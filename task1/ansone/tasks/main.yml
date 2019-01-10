@@ -1,0 +1,3 @@
+---
+# tasks file for ansone
+- include: configuration.yml

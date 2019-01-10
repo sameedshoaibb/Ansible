@@ -1,0 +1,5 @@
+---
+- hosts: sg
+  roles: 
+    - ansone
+    

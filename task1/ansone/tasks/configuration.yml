@@ -1,0 +1,78 @@
+---
+- name: Git Clone
+  script: git.sh   
+  tags:
+    - package1
+
+- name: Goto temp & make directory
+  file: path=/root/benchmarking_service/temp state=directory
+  tags:
+    - package2
+
+- name: Upgrade all packages to the latest version
+  apt: 
+    name: "*"
+    state: latest
+    force_apt_get: True
+  tags:
+    - state2
+
+- name: Installing list of Packages
+  apt:
+    name: "{{ packages }}"
+  vars:
+    packages: 
+      - python-pip
+#      - --fix-broken
+      - python-pycurl
+      - python-apt
+      - apt-transport-https
+      - curl 
+      - libtalloc-dev
+      - vim
+      - net-tools
+      - wget
+      - git
+      - libssl-dev
+      - liblzo2-dev
+      - libpam0g-dev
+      - jq 
+  tags: 
+    - state
+
+- name: Wget to to folder
+  get_url:
+    url: https://swupdate.openvpn.org/community/releases/openvpn-2.4.6.tar.gz
+    dest: /root
+  tags:
+    - package3
+
+- name: Execute the command in remote shell; stdout goes to the specified file on the remote.
+  shell: tar -zxf openvpn-2.4.6.tar.gz
+  tags:
+    - package4
+
+- name: ./Configure
+  shell: ./openvpn-2.4.6/configure
+  tags:
+    - package5
+
+- name: Make script
+  script: make.sh
+  tags:
+    - make
+- name: ./Configure
+  shell: 
+    name: 
+      - make check
+      - make install
+  tags:
+    - package6
+
+- name: Ensure a job that runs at 2 and 5 exists. Creates an entry like "0 5,2 * * ls -alh > /dev/null"
+  cron:
+    name: "check dirs"
+    minute: "0,10"
+    job: "/root/benchmarking_service/run.sh"
+  tags:
+    - de
