@@ -1,4 +1,0 @@
----
-- hosts: prox
-  roles:
-    - proxy
